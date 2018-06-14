@@ -1,0 +1,180 @@
+<div class="card house-details-card">
+    <div class="marginLR15  house-details-card  ">
+
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+            <span class="text-14 align-self-end hand-pointer">  </span>
+        </div>
+
+        <div class="d-flex flex-row justify-content-between align-items-start">
+
+            <span class="text-24">{{'HouseNewsComponent.news'| translate:lang}}:</span>
+
+            <div *ngIf="!editMode && userIsHead"
+                 class="d-flex flex-column justify-content-center align-items-center hand-pointer"
+                 (click)="onAddNewHouseNewsItem()">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                <span>{{'HouseNewsComponent.newNewsItem'| translate:lang}}  </span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div id="editingArea"></div>
+<div *ngIf="editMode" class="card house-details-card">
+    <div class="marginLR15  house-details-card news-item  ">
+
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+      <span class="text-14 align-self-end hand-pointer">
+
+      <i *ngIf="!editMode" class="fa fa-pencil" aria-hidden="true"
+         title="{{'HousePageComponent.edit'| translate:lang}}"
+         (click)="onSetEditMode()"></i>
+
+      <i *ngIf="editMode && newsItem.news_id!=''" class="fa fa-eye" aria-hidden="true"
+         title="{{'HousePageComponent.preview'| translate:lang}}"
+         (click)="onGoToPreview()"> </i>
+
+        <i *ngIf="editMode && newsItem.news_id==''" class="fa fa-eye" aria-hidden="true"
+           title="{{'HousePageComponent.preview'| translate:lang}}"
+           (click)="onGoToPreviewNew()"> </i>
+
+
+      <i *ngIf="editMode" class="fa fa-check" aria-hidden="true"
+         title="{{'HousePageComponent.done'| translate:lang}}"
+         (click)="onSetEditMode()"></i>
+      <i *ngIf="editMode" class="fa fa-times" aria-hidden="true"
+         title="{{'HousePageComponent.cancel'| translate:lang}}"
+         (click)="onCancelEditMode()"></i>
+    </span>
+        </div>
+
+        <div class="d-flex flex-column justify-content-start align-items-start text-18 editGroup">
+            <span>{{'HouseNewsComponent.title'| translate:lang}}</span>
+            <input
+                    class="newsTitleInput text-18"
+                    type="text"
+                    [(ngModel)]="newsItem.title">
+        </div>
+        <div class="content text-12">
+            <span>{{'HouseNewsComponent.paragraph'| translate:lang}}</span>
+        </div>
+        <div class="ckeEditor-area">
+            <ck-editor
+                    name="editor1"
+                    [(ngModel)]="newsItem.text_news"
+                    fullPage=true
+                    language={{editorLanguage}}
+                    [config]="editorConfig"
+                    (change)="onChange($event)">
+            </ck-editor>
+        </div>
+
+    </div>
+</div>
+
+<div *ngIf="editMode && newsItem.news_id==''" id="newsItemNew" class="card house-details-card ">
+    <div class="marginLR15  house-details-card news-item ">
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+      <span class="text-14">
+        {{'HousePageComponent.preview'| translate:lang}}:
+      </span>
+        </div>
+
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+      <span class="text-14 align-self-end hand-pointer">
+      </span>
+            <span class="text-14 align-self-end hand-pointer">
+      <i *ngIf="editMode "
+         class="fa fa-arrow-circle-up" aria-hidden="true"
+         title="{{'HousePageComponent.goUp'| translate:lang}}"
+         (click)="onBackToEdit()"></i>
+
+    </span>
+        </div>
+
+        <div class="d-flex flex-column justify-content-start align-items-start text-18 editGroup">
+            <span>{{newsItem.title}}</span>
+        </div>
+        <div class="content text-12">
+            <p [innerHTML]="newsItem.text_news"></p>
+        </div>
+    </div>
+</div>
+
+
+<div *ngFor="let newsItemInLoop of houseNews; index as i; trackBy:trackByFn" class="card house-details-card">
+    <div id="newsItem{{newsItemInLoop.news_id}}" class="marginLR15  house-details-card news-item  ">
+
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+      <span *ngIf="editMode && newsItemInLoop.news_id==newsItem.news_id"
+            class="text-14">
+        {{'HousePageComponent.preview'| translate:lang}}:
+      </span>
+        </div>
+
+        <div class="d-flex flex-column justify-content-start align-items-start width100 ">
+      <span *ngIf="userIsHead" class="text-14 align-self-end hand-pointer">
+
+      <span *ngIf="!editMode">{{'HousePageComponent.public'| translate:lang}}:</span>
+        <i *ngIf="!editMode && newsItemInLoop.is_public=='false'" class="fa fa-square-o" aria-hidden="true"
+           title="{{'HousePageComponent.publicTrue'| translate:lang}}"
+           (click)="onPublicate(newsItemInLoop)"></i>
+        <i *ngIf="!editMode && newsItemInLoop.is_public=='true'" class="fa fa-check-square-o" aria-hidden="true"
+           title="{{'HousePageComponent.publicFalse'| translate:lang}}"
+           (click)="onPublicate(newsItemInLoop)"></i>
+      </span>
+            <span *ngIf="userIsHead" class="text-14 align-self-end hand-pointer">
+      <i *ngIf="!editMode" class="fa fa-pencil" aria-hidden="true"
+         title="{{'HousePageComponent.edit'| translate:lang}}"
+         (click)="onSetEditMode(newsItemInLoop)"></i>
+
+      <i *ngIf="!editMode" class="fa fa-trash-o" aria-hidden="true"
+         title="{{'HousePageComponent.delete'| translate:lang}}"
+         (click)="onDelete(newsItemInLoop)"></i>
+      <i *ngIf="editMode && newsItemInLoop.news_id==newsItem.news_id"
+         class="fa fa-arrow-circle-up" aria-hidden="true"
+         title="{{'HousePageComponent.goUp'| translate:lang}}"
+         (click)="onBackToEdit()"></i>
+
+    </span>
+        </div>
+
+        <div class="d-flex flex-column justify-content-start align-items-start text-18 editGroup">
+            <span>{{newsItemInLoop.title}}</span>
+        </div>
+        <div class="content text-12"
+             [ngClass]="{
+              collapsed : collapsedNews[newsItemInLoop.news_id]==true
+         }"
+        >
+            <p [innerHTML]="newsItemInLoop.text_news"></p>
+        </div>
+
+        <div *ngIf="!editMode"
+             class="d-flex flex-row flex-wrap justify-content-between align-items-center text-12 width100">
+            <div class="d-flex flex-row flex-wrap text-12">
+                <div class="newsDate"><span>{{'HousePageComponent.createDate'| translate:lang}} :</span>
+                    <span class="date"> {{newsItemInLoop.create_date | date:'dd.MM.yyyy HH:mm' }}</span>
+                </div>
+                <div class="newsDate"><span>{{'HousePageComponent.lastUpdate'| translate:lang}} :</span>
+                    <span class="date"> {{newsItemInLoop.last_update | date:'dd.MM.yyyy HH:mm' }}</span>
+                </div>
+            </div>
+
+
+            <span class="link" *ngIf="collapsedNews[newsItemInLoop.news_id]==true"
+                  (click)="onChangeState(newsItemInLoop.news_id)">
+        {{'General.expand'| translate:lang}}</span>
+
+
+            <span class="link" *ngIf="collapsedNews[newsItemInLoop.news_id]==false"
+                  (click)="onChangeState(newsItemInLoop.news_id)">
+        {{'General.collapse'| translate:lang}}</span>
+
+        </div>
+
+
+    </div>
+</div>
